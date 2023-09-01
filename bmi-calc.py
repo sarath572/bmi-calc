@@ -61,6 +61,11 @@ def main():
                 st.write("Invalid birthdate. Enter a valid birthdate.")
                 return
 
+            if age < 5:
+                st.write(f"Your age is {age} years, {months} months, and {days} days")
+                st.write("You are not eligible to check your BMI (Body Mass Index).")
+                return
+
             st.write(f"Your age is {age} years, {months} months, and {days} days")
 
             height_meters = (height_feet * 0.3048) + (height_inches * 0.0254)
@@ -106,4 +111,6 @@ def main():
             st.write("Invalid input. Please enter valid data.")
 
 if __name__ == "__main__":
+    st.sidebar.text("Made by: sai sarath")
+    st.sidebar.text("Contact: sarathpagadala.777@gmail.com")
     main()
