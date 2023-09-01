@@ -3,8 +3,8 @@ import datetime
 
 suggested_bmi_ranges = {
     "male": {
-        "5-10" : (14.5,19.5),
-        "11-17": (16.5,23.5),
+        "5-10": (14.5, 19.5),
+        "11-17": (16.5, 23.5),
         "18-24": (18.5, 24.9),
         "25-34": (19.0, 25.9),
         "35-44": (20.0, 26.9),
@@ -13,8 +13,8 @@ suggested_bmi_ranges = {
         "65+": (23.0, 29.9),
     },
     "female": {
-        "5-10" : (14.5,19.5),
-        "10-18": (16.5,23.5),
+        "5-10": (14.5, 19.5),
+        "10-18": (16.5, 23.5),
         "18-24": (18.5, 24.9),
         "25-34": (19.0, 25.9),
         "35-44": (20.0, 26.9),
@@ -38,16 +38,29 @@ def main():
     weight = st.number_input("Enter your weight in kilograms (4 to 150 kg):", min_value=4, max_value=150)
 
     calculate_button = st.button("Calculate BMI")
-    st.sidebar.text("Made by Sai sarath")
-    st.sidebar.text("Contact:sarathpagadala.777@gmail.com ")
 
     if calculate_button:
         try:
             birthdate = dob
             today = datetime.date.today()
-            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
-            months = (today.month - birthdate.month) % 12
-            days = today.day - birthdate.day
+            if (today.month, today.day) < (birthdate.month, birthdate.day):
+                year = today.year - 1
+                month = today.month + 12
+            else:
+                year = today.year
+                month = today.month
+            age = year - birthdate.year
+            months = month - birthdate.month
+            if today.day < birthdate.day:
+                months -= 1
+                days = today.day + (30 if birthdate.month in [4, 6, 9, 11] else 31 if birthdate.month != 2 else 29 if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0) else 28) - birthdate.day
+            else:
+                days = today.day - birthdate.day
+
+            if age < 0 or (age == 0 and months < 0) or (months == 0 and days < 0):
+                st.write("Invalid birthdate. Enter a valid birthdate.")
+                return
+
             st.write(f"Your age is {age} years, {months} months, and {days} days")
 
             height_meters = (height_feet * 0.3048) + (height_inches * 0.0254)
