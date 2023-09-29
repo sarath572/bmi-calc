@@ -4,7 +4,7 @@ import datetime
 suggested_bmi_ranges = {
     "male": {
         "5-10": (14.5, 19.5),
-        "11-17": (16.5, 23.5),
+        "10-18": (16.5, 23.5),
         "18-24": (18.5, 24.9),
         "25-34": (19.0, 25.9),
         "35-44": (20.0, 26.9),
@@ -34,9 +34,12 @@ def main():
     gender = st.radio("Select your gender:", ["Male", "Female"])
     height_feet = st.selectbox("Enter your height in feet:", list(range(2, 8)))
     height_inches = st.selectbox("Enter your height in inches:", list(range(12)))
-    weight = st.number_input("Enter your weight in kilograms :")
+    weight = st.number_input("Enter your weight in kilograms:")
 
     calculate_button = st.button("Calculate BMI")
+
+    # Initialize BMI here
+    bmi = None
 
     if calculate_button:
         try:
@@ -61,22 +64,23 @@ def main():
                 return
 
             if age < 5:
-                st.write(f"Your age is {age} years, {months} months, and {days} days")
+                st.write(f"Your age is {age} years - {months} months - {days} days")
                 st.write("You are not eligible to check your BMI (Body Mass Index).")
                 return
 
-            st.write(f"Your age is {age} years  {months} months  and {days} days.")
+            st.write(f"Your age is {age} years - {months} months -  {days} days.")
 
             height_meters = (height_feet * 0.3048) + (height_inches * 0.0254)
-            
+
+            # Calculate BMI
             bmi = calculate_bmi(height_meters, weight)
-            st.write(f"Your BMI (Body Mass Index) is  {bmi:.2f}")
+            st.write(f"Your BMI (Body Mass Index) is {bmi:.2f}")
 
             age_group = None
             if 5 <= age < 10:
                 age_group = "5-10"
             elif 10 <= age < 18:
-                age_group = "10-18" if gender == "Male" else "10-18"
+                age_group = "10-18"
             elif 18 <= age < 25:
                 age_group = "18-24"
             elif 25 <= age < 35:
@@ -91,20 +95,20 @@ def main():
                 age_group = "65+"
 
             suggested_range = suggested_bmi_ranges.get(gender.lower(), {}).get(age_group, None)
-            if suggested_range:
+            if suggested_range is not None:
                 suggested_weight_min = suggested_range[0] * (height_meters ** 2)
                 suggested_weight_max = suggested_range[1] * (height_meters ** 2)
-                st.write(f"Suggested BMI range for your age and gender is  {suggested_range[0]} - {suggested_range[1]}")
-                st.write(f"Suggested weight range for your age and gender is  {suggested_weight_min:.2f} kg - {suggested_weight_max:.2f} kg")
+                st.write(f"Suggested BMI range for your age and gender is {suggested_range[0]} - {suggested_range[1]}")
+                st.write(f"Suggested weight range for your age and gender is {suggested_weight_min:.2f} kg - {suggested_weight_max:.2f} kg")
+
+                if bmi < suggested_range[0]:
+                    st.write("Your BMI is below the suggested range. You are underweight. Eat some healthy food.")
+                elif bmi >= suggested_range[0] and bmi <= suggested_range[1]:
+                    st.write("Your BMI is within the suggested range.")
+                else:
+                    st.write("Your BMI is above the suggested range. You are overweight. Do some exercises daily")
             else:
                 st.write("Suggested BMI range not available for your age and gender.")
-
-            if bmi < suggested_range[0]:
-                st.write("Your BMI is below the suggested range. You are underweight. Eat some healthy food.")
-            elif bmi >= suggested_range[0] and bmi <= suggested_range[1]:
-                st.write("Your BMI is within the suggested range.")
-            else:
-                st.write("Your BMI is above the suggested range. You are overweight. Do some exercises daily.")
         except ValueError:
             st.write("Invalid input. Please enter valid data.")
 
